@@ -1,0 +1,38 @@
+[package]
+name = "fuzz"
+version = "0.1.0"
+publish = false
+edition = "2018"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+memchr = { workspace = true }
+stringzilla = { workspace = true }
+
+[[bin]]
+name = "sz_find"
+doc = false
+test = false
+bench = false
+path = "fuzz_targets/sz_find.rs"
+
+[[bin]]
+name = "memmem_find"
+path = "fuzz_targets/memmem_find.rs"
+test = false
+doc = false
+
+[profile.release]
+opt-level = 3
+debug = true
+
+[profile.dev]
+opt-level = 3
+debug = true
+
+[profile.test]
+opt-level = 3
+debug = true

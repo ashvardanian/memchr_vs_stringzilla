@@ -1,0 +1,6 @@
+[workspace]
+members = ["fuzz"]
+
+[workspace.dependencies]
+memchr = { version = "2.7.1", default-features = false }
+stringzilla = { git = "https://github.com/ashvardanian/stringzilla.git", rev = "663a633082e20f41052e2d6a6d9766dd061c9445" }
