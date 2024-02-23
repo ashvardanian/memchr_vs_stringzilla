@@ -3,5 +3,6 @@
 To run the benchmarks, execute the following bash script in your terminal:
 
 ```bash
-./bench.sh <token>
+cargo install cargo-criterion --locked
+DOCUMENT_PATH=README.md cargo criterion --jobs 8
 ```

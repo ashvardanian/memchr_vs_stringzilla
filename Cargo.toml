@@ -7,19 +7,9 @@ edition = "2018"
 rand = "0.8.5"
 criterion = "0.5.1"
 memchr = { version = "2.7.1", default-features = false }
-stringzilla = { git = "https://github.com/ashvardanian/stringzilla.git", rev = "663a633082e20f41052e2d6a6d9766dd061c9445" }
+stringzilla = { version = "3.2.0" }
 
 [[bench]]
 name = "bench"
 harness = false
 path = "bench.rs"
-
-[[bench]]
-name = "mm"
-harness = false
-path = "mm.rs"
-
-[[bench]]
-name = "sz"
-harness = false
-path = "sz.rs"
