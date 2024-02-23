@@ -1,4 +1,4 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use std::env;
 use std::fs;
 
@@ -9,48 +9,109 @@ fn configure_bench() -> Criterion {
     Criterion::default()
         .sample_size(1000) // Test this many needles.
         .warm_up_time(std::time::Duration::from_secs(10)) // Let the CPU frequencies settle.
-        .measurement_time(std::time::Duration::from_secs(120)) //
+        .measurement_time(std::time::Duration::from_secs(120)) // Actual measurement time.
 }
 
 fn benchmarks(c: &mut Criterion) {
-    // Get the document path from the environment variable.
-    let document_path =
-        env::var("DOCUMENT_PATH").expect("DOCUMENT_PATH environment variable not set");
-    let document_content = fs::read_to_string(&document_path).expect("Could not read file");
+    // Get the haystack path from the environment variable.
+    let haystack_path =
+        env::var("HAYSTACK_PATH").expect("HAYSTACK_PATH environment variable not set");
+    let haystack_content = fs::read_to_string(&haystack_path).expect("Could not read haystack");
 
-    // Tokenize the document content by white space.
-    let tokens: Vec<&str> = document_content.split_whitespace().collect();
-    if tokens.is_empty() {
-        panic!("No tokens found in the document.");
+    // Tokenize the haystack content by white space.
+    let needles: Vec<&str> = haystack_content.split_whitespace().collect();
+    if needles.is_empty() {
+        panic!("No tokens found in the haystack.");
     }
 
-    let file = document_content.as_bytes();
+    let haystack = haystack_content.as_bytes();
+    let haystack_length = haystack.len();
 
-    // Benchmark for StringZilla
-    let mut token_index = 0u64; // Token index outside of the iter closure
-    c.bench_function("stringzilla", |b| {
+    // Benchmarks for forward search
+    let mut g = c.benchmark_group("search-forward");
+    g.throughput(Throughput::Bytes(haystack_length as u64));
+    perform_forward_benchmarks(&mut g, &needles, haystack);
+    g.finish();
+
+    // Benchmarks for reverse search
+    let mut g = c.benchmark_group("search-reverse");
+    g.throughput(Throughput::Bytes(haystack_length as u64));
+    perform_reverse_benchmarks(&mut g, &needles, haystack);
+    g.finish();
+}
+
+fn perform_forward_benchmarks(
+    g: &mut criterion::BenchmarkGroup<'_, criterion::measurement::WallTime>,
+    needles: &[&str],
+    haystack: &[u8],
+) {
+    // Benchmark for StringZilla forward search
+    let mut token_index: usize = 0;
+    g.bench_function("stringzilla::find", |b| {
         b.iter(|| {
-            let token = tokens[token_index];
+            let token = needles[token_index];
             let token_bytes = token.as_bytes();
-            let mut pos = 0u64;
-            while let Some(found) = (&file[pos..]).sz_find(token_bytes) {
-                pos += found + token_bytes.len(); // Move past the found token for the next search.
+            let mut pos: usize = 0;
+            while let Some(found) = (&haystack[pos..]).sz_find(token_bytes) {
+                pos += found + token_bytes.len();
             }
-            token_index = (token_index + 1) % tokens.len(); // Move to the next token, wrap around if necessary
+            token_index = (token_index + 1) % needles.len();
         })
     });
 
-    // Benchmark for memchr
-    let mut token_index = 0u64; // Reset token index for the next benchmark
-    c.bench_function("memchr", |b| {
+    // Benchmark for memchr (forward search)
+    let mut token_index: usize = 0; // Reset token index for the next benchmark
+    g.bench_function("memmem::find", |b| {
         b.iter(|| {
-            let token = tokens[token_index];
+            let token = needles[token_index];
             let token_bytes = token.as_bytes();
-            let mut pos = 0u64;
-            while let Some(found) = memmem::find(&file[pos..], token_bytes) {
-                pos += found + token_bytes.len(); // Move past the found token for the next search.
+            let mut pos: usize = 0;
+            while let Some(found) = memmem::find(&haystack[pos..], token_bytes) {
+                pos += found + token_bytes.len();
             }
-            token_index = (token_index + 1) % tokens.len(); // Move to the next token, wrap around if necessary
+            token_index = (token_index + 1) % needles.len();
+        })
+    });
+}
+
+fn perform_reverse_benchmarks(
+    g: &mut criterion::BenchmarkGroup<'_, criterion::measurement::WallTime>,
+    needles: &[&str],
+    haystack: &[u8],
+) {
+    // Benchmark for StringZilla reverse search
+    let mut token_index: usize = 0;
+    g.bench_function("stringzilla::rfind", |b| {
+        b.iter(|| {
+            let token = needles[token_index];
+            let token_bytes = token.as_bytes();
+            let mut pos: Option<usize> = Some(haystack.len());
+            while let Some(end) = pos {
+                if let Some(found) = (&haystack[..end]).sz_rfind(token_bytes) {
+                    pos = Some(found); // Update position to the start of the found token for the next search.
+                } else {
+                    break; // No more occurrences found.
+                }
+            }
+            token_index = (token_index + 1) % needles.len();
+        })
+    });
+
+    // Benchmark for memchr reverse search
+    let mut token_index: usize = 0;
+    g.bench_function("memmem::rfind", |b| {
+        b.iter(|| {
+            let token = needles[token_index];
+            let token_bytes = token.as_bytes();
+            let mut pos: Option<usize> = Some(haystack.len());
+            while let Some(end) = pos {
+                if let Some(found) = memmem::rfind(&haystack[..end], token_bytes) {
+                    pos = Some(found); // Update position to the start of the found token for the next search.
+                } else {
+                    break; // No more occurrences found.
+                }
+            }
+            token_index = (token_index + 1) % needles.len();
         })
     });
 }
