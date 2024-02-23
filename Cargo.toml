@@ -7,7 +7,8 @@ edition = "2018"
 rand = "0.8.5"
 criterion = "0.5.1"
 memchr = { version = "2.7.1", default-features = false }
-stringzilla = { version = "3.2.0" }
+# stringzilla = { version = "3.2.0" }
+stringzilla = { path = "../StringZilla" } # Adjust this path to the actual location relative to your project
 
 [[bench]]
 name = "bench"
