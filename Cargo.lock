@@ -3,6 +3,16 @@
 version = 3
 
 [[package]]
+name = "MemChrVsStringZilla"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "memchr",
+ "rand",
+ "stringzilla",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -459,6 +469,8 @@ dependencies = [
 [[package]]
 name = "stringzilla"
 version = "3.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e49cf347362c670f318a9ac7fe678c0ff16a8f86177b95b65b05664418dd11b2"
 dependencies = [
  "cc",
 ]
@@ -472,16 +484,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
-]
-
-[[package]]
-name = "sz_rust_bench"
-version = "0.1.0"
-dependencies = [
- "criterion",
- "memchr",
- "rand",
- "stringzilla",
 ]
 
 [[package]]
