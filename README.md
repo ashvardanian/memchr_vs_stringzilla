@@ -1,11 +1,11 @@
-# `memchr` vs `stringzilla`
+# [`memchr`](https://github.com/BurntSushi/memchr) vs [`stringzilla`](https://github.com/ashvardanian/StringZilla)
 
 ## Rust Substring Search Benchmarks 
 
 Substring search is one of the most common operations in text processing, and one of the slowest.
 StringZilla was designed to supersede LibC and implement those core operations in CPU-friendly manner, using branchless operations, SWAR, and SIMD assembly instructions.
 Notably, Rust has a `memchr` crate that provides a similar functionality, and it's used in many popular libraries.
-This repository provides basic benchmarking scripts for comparing the throughput of `stringzilla` and `memchr`.
+This repository provides basic benchmarking scripts for comparing the throughput of [`stringzilla`](https://github.com/ashvardanian/StringZilla) and [`memchr`](https://github.com/BurntSushi/memchr).
 For normal order and reverse order search, over ASCII and UTF8 input data, the following numbers can be expected.
 
 |               |         ASCII ⏩ |         ASCII ⏪ |         UTF8 ⏩ |          UTF8 ⏪ |
