@@ -6,16 +6,16 @@ Notably, Rust has a `memchr` crate that provides a similar functionality, and it
 This repository provides basic benchmarking scripts for comparing the throughput of `stringzilla` and `memchr`.
 For normal order and reverse order search, over ASCII and UTF8 input data, the following numbers can be expected.
 
-|               |   ASCII ⏩ |         ASCII ⏪ |     UTF8 ⏩ |          UTF8 ⏪ |
-| ------------- | --------: | --------------: | ---------: | --------------: |
-| Intel:        |           |                 |            |                 |
-| `memchr`      | 5.89 GB/s |       1.08 GB/s |  8.73 GB/s |       3.35 GB/s |
-| `stringzilla` | 8.37 GB/s |       8.21 GB/s | 11.21 GB/s |      11.20 GB/s |
-| Arm:          |           |                 |            |                 |
-| `memchr`      | 6.57 GB/s |       1.12 GB/s | 13.20 GB/s |       3.56 GB/s |
-| `stringzilla` |         - |       5.56 GB/s |          - |       8.17 GB/s |
-|               |           |                 |            |                 |
-| Average       |           | __6.2x__ faster |            | __2.8x__ faster |
+|               |         ASCII ⏩ |         ASCII ⏪ |         UTF8 ⏩ |          UTF8 ⏪ |
+| ------------- | --------------: | --------------: | -------------: | --------------: |
+| Intel:        |                 |                 |                |                 |
+| `memchr`      |       5.89 GB/s |       1.08 GB/s |      8.73 GB/s |       3.35 GB/s |
+| `stringzilla` |   __8.37__ GB/s |   __8.21__ GB/s | __11.21__ GB/s |  __11.20__ GB/s |
+| Arm:          |                 |                 |                |                 |
+| `memchr`      |       6.38 GB/s |       1.12 GB/s | __13.20__ GB/s |       3.56 GB/s |
+| `stringzilla` |   __6.56__ GB/s |   __5.56__ GB/s |      9.41 GB/s |   __8.17__ GB/s |
+|               |                 |                 |                |                 |
+| Average       | __1.2x__ faster | __6.2x__ faster |              - | __2.8x__ faster |
 
 
 > For Intel the benchmark was run on AWS `r7iz` instances with Sapphire Rapids cores.

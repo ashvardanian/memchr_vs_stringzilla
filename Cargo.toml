@@ -1,5 +1,5 @@
 [package]
-name = "MemChrVsStringZilla"
+name = "memchr_vs_stringzilla"
 version = "0.1.0"
 edition = "2018"
 
@@ -7,7 +7,7 @@ edition = "2018"
 rand = "0.8.5"
 criterion = "0.5.1"
 memchr = { version = "2.7.1", default-features = false }
-stringzilla = { version = "3.2.0" }
+stringzilla = { version = "3.3.0" }
 
 [[bench]]
 name = "bench"
