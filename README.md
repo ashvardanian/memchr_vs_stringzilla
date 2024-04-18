@@ -34,6 +34,13 @@ cargo install cargo-criterion --locked
 HAYSTACK_PATH=README.md cargo criterion --jobs 8
 ```
 
+On Windows using PowerShell you'd need to set the environment variable differently:
+
+```powershell
+$env:HAYSTACK_PATH="README.md"
+cargo criterion --jobs 8
+```
+
 As part of the benchmark, the input "haystack" file is whitespace-tokenized into an array of strings.
 In every benchmark iteration, a new "needle" is taken from that array of tokens.
 All inclusions of that token in the haystack are counted, and the throughput is calculated.
